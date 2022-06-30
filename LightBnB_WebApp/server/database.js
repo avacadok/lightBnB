@@ -108,7 +108,7 @@ const getAllReservations = function(guest_id, limit = 10) {
   return pool.query(queryString, values)
   .then((result) => {
     console.log('getAllReseration', result.rows);
-    return result.rows
+    return result.rows;
   })
   .catch((err) => {
     console.log(err.message);
