@@ -151,15 +151,29 @@ exports.getAllReservations = getAllReservations;
     queryParams.push(options.owner_id);
     queryString += `owner_id = $${queryParams.length}`;
   }
+
+  if (options.minimum_price_per_night && options.maximum_price_per_night) {
+    // if(queryParams.length){
+    //   queryString += ` AND `
+    // }
+    queryParams.push(options.minimum_price_per_night*100);
+    queryParams.push(options.maximum_price_per_night*100);
+    queryString += `AND cost_per_night >= $${queryParams.length - 1} AND cost_per_night <= $${queryParams.length}`;
+  }
+  queryString += `
+  GROUP BY properties.id `
+
+  if(options.minimum_rating){
+    queryParams.push(options.minimum_rating);
+    queryString += `HAVING avg(rating) >= $${queryParams.length}`;
+  }
   console.log('options',options)
 
   queryParams.push(limit);
   queryString += `
-  GROUP BY properties.id
   ORDER BY cost_per_night
   LIMIT $${queryParams.length};
   `;
-
   console.log(queryString, queryParams);
 
   return pool.query(queryString, queryParams)
